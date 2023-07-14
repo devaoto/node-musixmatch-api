@@ -1,0 +1,37 @@
+{
+  "name": "node-musixmatch-api",
+  "version": "1.0.0",
+  "description": "Advanced API library for seamless Musixmatch integration.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codeblitz97/node-musixmatch-api.git"
+  },
+  "keywords": [
+    "Musixmatch",
+    "Api",
+    "Node",
+    "node-musixmatch-api",
+    "Musixmatch",
+    "API",
+    "Node",
+    "Backend",
+    "Frontend"
+  ],
+  "author": "Mohtasim Alam Sohom",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/codeblitz97/node-musixmatch-api/issues"
+  },
+  "homepage": "https://github.com/codeblitz97/node-musixmatch-api#readme",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "es6-promise": "^4.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.2"
+  }
+}
