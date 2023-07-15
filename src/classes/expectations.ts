@@ -36,25 +36,9 @@ class MXMException extends Error {
 }
 
 class MusixmatchError extends Error {
-  private requestUrl: string;
-
-  constructor(message: string, url: string) {
+  constructor(message: string) {
     super(message);
-    this.name = this.constructor.name;
-    this.requestUrl = url;
-
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, this.constructor);
-    }
-  }
-
-  // Override the toString method to include the requestUrl in the error stack
-  toString() {
-    let stack = super.toString();
-    if (this.requestUrl) {
-      stack += `\nRequest URL: ${this.requestUrl}`;
-    }
-    return stack;
+    this.name = 'MusixmatchError';
   }
 }
 

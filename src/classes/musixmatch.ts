@@ -1,5 +1,9 @@
 'use strict';
 
+if (typeof Promise === 'undefined' || !Promise) {
+  require('es6-promise').Promise;
+}
+
 import axios, { AxiosResponse } from 'axios';
 import * as expectations from './expectations';
 const { MXMException, MusixmatchError } = expectations;
@@ -76,15 +80,13 @@ class Musixmatch {
       }
     } catch (error: any) {
       if (error.response) {
-        const requestUrl = error.config ? error.config.url : '';
         throw new MusixmatchError(
-          `Status code: ${error.response.status}\nHTTP error occurred: ${error.response.data}`,
-          requestUrl
+          `Status code: ${error.response.status}\nHTTP error occurred: ${error.response.data}`
         );
       } else if (error.code === 'ECONNREFUSED') {
-        throw new MusixmatchError('Connection refused', url);
+        throw new MusixmatchError('Connection refused');
       } else {
-        throw new MusixmatchError(error.message, url);
+        throw new MusixmatchError(error.message);
       }
     }
   }
