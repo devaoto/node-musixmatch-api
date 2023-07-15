@@ -1,10 +1,21 @@
+'use strict';
+
 import axios, { AxiosResponse } from 'axios';
-import { MXMException, MusixmatchError } from './expectations';
+import * as expectations from './expectations';
+const { MXMException, MusixmatchError } = expectations;
 import {
   TrackGet,
   TrackSearch,
   ChartArtists,
   ChartTracks,
+  TrackLyrics,
+  TrackMood,
+  TrackRichSync,
+  TrackSnippet,
+  TrackSubtitle,
+  MatcherLyrics,
+  MatcherSubtitle,
+  MatcherTrack,
 } from '../interfaces';
 
 /**
@@ -171,13 +182,35 @@ class Musixmatch {
     return this._apiCall('get', 'chart.tracks.get', queryParams);
   }
 
-  async trackLyricsGet<T extends string>(...params: T[]): Promise<any> {
+  /**
+   * Get the lyrics of a track.
+   *
+   * Make sure the fullfil the country restriction you recieve within every copyrighted content>
+   * @param params - The parameters
+   * @returns A promise that resolves to the track lyrics.
+   *
+   * parameters:
+   * - track_id - The Musixmatch track id
+   * - commontrack_id - The Musixmatch commontrack id
+   */
+  async trackLyricsGet<T extends string>(...params: T[]): Promise<TrackLyrics> {
     const queryParams = Object.fromEntries(
       params.map((param) => param.split('='))
     );
     return this._apiCall('get', 'track.lyrics.get', queryParams);
   }
 
+  /**
+   * Submit a lyrics to Musixmatch database.
+   * Use this api to submit lyrics to Musixmatch database. Musixmatch can only add lyrics if we already have the song meta-data. Musixmatch will validate every submission and in case, make it available through Musixmatch api to Musixmatch customers. The lyrics have to be submitted according to [Musixmatch Guidelines](https://community.musixmatch.com/guidelines?lng=en-US)
+   * @param params - The parameters
+   * @returns - A promise that resolves to the lyrics publish.
+   *
+   * parameters:
+   * - commontrack_id - A valid commontrack_id
+   * - track_isrc - A valid isrc
+   * - lyrics_body - The lyrics
+   */
   async trackLyricsPost<T extends string>(...params: T[]): Promise<any> {
     const queryParams = Object.fromEntries(
       params.map((param) => param.split('='))
@@ -185,34 +218,108 @@ class Musixmatch {
     return this._apiCall('post', 'track.lyrics.post', queryParams);
   }
 
-  async trackLyricsMoodGet<T extends string>(...params: T[]): Promise<any> {
+  /**
+   * Get the mood list (and raw value that generated it) of a lyrics
+   * @param params - The parameters
+   * @returns - A promise that resolves to the track mood.
+   *
+   * parameters:
+   * - commontrack_id - The Musixmatch track id
+   * - track_isrc - A valid ISRC identifier
+   */
+  async trackLyricsMoodGet<T extends string>(
+    ...params: T[]
+  ): Promise<TrackMood> {
     const queryParams = Object.fromEntries(
       params.map((param) => param.split('='))
     );
     return this._apiCall('get', 'track.lyrics.mood.get', queryParams);
   }
 
-  async trackSnippetGet<T extends string>(...params: T[]): Promise<any> {
+  /**
+   * Get the snippet for a given track.
+   *
+   * A lyrics snippet is a very short representation of a song lyrics. It’s usually twenty to a hundred characters long and it’s calculated extracting a sequence of words from the lyrics.
+   * @param params - The parameters
+   * @returns - A promise that resolves to the track snippet
+   *
+   * parameters:
+   * - track_id - The musixmatch track id
+   */
+  async trackSnippetGet<T extends string>(
+    ...params: T[]
+  ): Promise<TrackSnippet> {
     const queryParams = Object.fromEntries(
       params.map((param) => param.split('='))
     );
     return this._apiCall('get', 'track.snippet.get', queryParams);
   }
 
-  async trackSubtitleGet<T extends string>(...params: T[]): Promise<any> {
+  /**
+   * Retreive the subtitle of a track.
+   *
+   * Return the subtitle of a track in LRC or DFXP format.
+   *
+   * Refer to Wikipedia LRC format page or DFXP format on W3c for format specifications.
+   *
+   * Make sure the fullfil the country restriction you recieve within every copyrighted content.
+   * @param params - The parameters
+   * @returns A promise that resolves to the track subtitle.
+   *
+   * parameters:
+   * - commontrack_id - The Musixmatch commontrack id
+   * - subtitle_format - The format of the subtitle (lrc,dfxp,stledu). Default to lrc
+   * - f_subtitle_length - The desired length of the subtitle (seconds)
+   * - f_subtitle_length_max_deviation - The maximum deviation allowed from the f_subtitle_length (seconds)
+   */
+  async trackSubtitleGet<T extends string>(
+    ...params: T[]
+  ): Promise<TrackSubtitle> {
     const queryParams = Object.fromEntries(
       params.map((param) => param.split('='))
     );
     return this._apiCall('get', 'track.subtitle.get', queryParams);
   }
 
-  async trackRichSyncGet<T extends string>(...params: T[]): Promise<any> {
+  /**
+   * Get the Rich sync for a track
+   *
+   * A rich sync is an enhanced version of the standard sync which allows:
+   *
+   * position offset by single characther
+   * - endless formatting options at single char level
+   * - multiple concurrent voices
+   * - multiple scrolling direction
+   * @param params - The parameters
+   * @returns A promise that resolves to the track rich sync.
+   *
+   * parameters:
+   * - track_id - The musixmatch track id
+   * - f_richsync_length - The desired length of the sync (seconds)
+   * - f_richsync_length_max_deviation - The maximum deviation allowed from the f_sync_length (seconds)
+   */
+  async trackRichSyncGet<T extends string>(
+    ...params: T[]
+  ): Promise<TrackRichSync> {
     const queryParams = Object.fromEntries(
       params.map((param) => param.split('='))
     );
     return this._apiCall('get', 'track.richsync.get', queryParams);
   }
 
+  /**
+   * Get a translated lyrics for a given language
+   * @param params - The parameters
+   * @returns - A promise that resolves to the Lyrics Translation
+   *
+   * parameters:
+   * - selected_languageThe language of the translated lyrics (ISO 639-1)
+   * - min_completed - Teal from 0 to 1. If present, only the tracks with a translation ratio over this specific value, for a given language, are returned Set it to 1 for completed translation only, to 0.7 for a mimimum of 70% complete translation.
+   * - commontrack_id - The Musixmatch commontrack id
+   * - track_id - The Musixmatch track id
+   * - track_isrc - A valid ISRC identifier
+   * - track_mbid - The musicbrainz recording id
+   */
   async trackLyricsTranslationGet<T extends string>(
     ...params: T[]
   ): Promise<any> {
@@ -222,6 +329,19 @@ class Musixmatch {
     return this._apiCall('get', 'track.lyrics.translation.get', queryParams);
   }
 
+  /**
+   * Get a translated subtitle for a given language
+   * @param params - The parameters
+   * @returns - A promise that resolves to the track subtitle translation.
+   *
+   * parameters:
+   * - selected_language - The language of the translated lyrics (ISO 639-1)
+   * - min_completed - Teal from 0 to 1. If present, only the tracks with a translation ratio over this specific value, for a given language, are returned Set it to 1 for completed translation only, to 0.7 for a mimimum of 70% complete translation.
+   * - commontrack_id - The Musixmatch commontrack id
+   * - track_isrc - A valid ISRC identifier
+   * - f_subtitle_length - The desired length of the subtitle (seconds)
+   * - f_subtitle_length_max_deviation - The maximum deviation allowed from the f_subtitle_length (seconds)
+   */
   async trackSubttileTranslationGet<T extends string>(
     ...params: T[]
   ): Promise<any> {
@@ -230,45 +350,150 @@ class Musixmatch {
     );
     return this._apiCall('get', 'track.subtitle.translation.get', queryParams);
   }
+
+  /**
+   * Get the list of the music genres of our catalogue.
+   * @returns - A promise that resolves to the all music genres.
+   */
   async musicGenresGet(): Promise<any> {
     return this._apiCall('get', 'music.genres.get');
   }
-  async matcherLyricsGet<T extends string>(...params: T[]): Promise<any> {
+
+  /**
+   * Get the lyrics for track based on title and artist
+   * @param params - The parameters
+   * @returns - A promise that resolves to the matcher lyrics.
+   *
+   * parameters:
+   * - q_track - The song title
+   * - q_artist - The song artist
+   * - track_isrc - If you have an available isrc id in your catalogue you can query using this id only (optional)
+   */
+  async matcherLyricsGet<T extends string>(
+    ...params: T[]
+  ): Promise<MatcherLyrics> {
     const queryParams = Object.fromEntries(
       params.map((param) => param.split('='))
     );
     return this._apiCall('get', 'matcher.lyrics.get', queryParams);
   }
-  async matcherTrackGet<T extends string>(...params: T[]): Promise<any> {
+
+  /**
+   * Match your song against Musixmatch database.
+   *
+   * In some cases you already have some informations about the track title, artist name, album etc.
+   * A possible strategy to get the corresponding lyrics could be:
+   * - search our catalogue with a perfect match,
+   * - maybe try using the fuzzy search,
+   * - maybe try again using artist aliases, and so on.
+   *
+   * The matcher.track.get method does all the job for you in a single call. This way you dont’t need to worry about the details, and you’ll get instant benefits for your application without changing a row in your code, while we take care of improving the implementation behind. Cool, uh?
+   * @param params - The parameters
+   * @returns A promise that resolves to the matcher track.
+   *
+   * parameters:
+   * - q_track - The song title
+   * - q_artist - The song artist
+   * - q_albumThe song album
+   */
+  async matcherTrackGet<T extends string>(
+    ...params: T[]
+  ): Promise<MatcherTrack> {
     const queryParams = Object.fromEntries(
       params.map((param) => param.split('='))
     );
     return this._apiCall('get', 'matcher.track.get', queryParams);
   }
-  async matcherSubtitleGet<T extends string>(...params: T[]): Promise<any> {
+
+  /**
+   * Get the subtitles for a song given his title,artist and duration.
+   * @param params - The parameters
+   * @returns A promise that resolves to the matcher subtitle
+   *
+   * parameters:
+   * - q_track - The song title
+   * - q_artist - The song artist
+   * f_subtitle_length - Filter by subtitle length in seconds
+   * f_subtitle_length_max_deviation - Max deviation for a subtitle length in seconds
+   * track_isrc If you have an available isrc id in your catalogue you can query using this id only (optional)
+   */
+  async matcherSubtitleGet<T extends string>(
+    ...params: T[]
+  ): Promise<MatcherSubtitle> {
     const queryParams = Object.fromEntries(
       params.map((param) => param.split('='))
     );
     return this._apiCall('get', 'matcher.subtitle.get', queryParams);
   }
+
+  /**
+   * Get the artist data from Musixmatch database.
+   * @param params - The parameters
+   * @returns - A promise that resolves to the artist get
+   *
+   * parameters:
+   * - artist_id - Musixmatch artist id
+   * - artist_mbid - Musicbrainz artist id
+   */
   async artistGet<T extends string>(...params: T[]): Promise<any> {
     const queryParams = Object.fromEntries(
       params.map((param) => param.split('='))
     );
     return this._apiCall('get', 'artist.get', queryParams);
   }
+
+  /**
+   * Search for artists in Musixmatch database.
+   * @param params - The parameters.
+   * @returns A promise that resolves to the artist search.
+   *
+   * parameters:
+   * - q_artist - The song artist
+   * - f_artist_id - When set, filter by this artist id
+   * - f_artist_mbid - When set, filter by this artist musicbrainz id
+   * - page - Define the page number for paginated results
+   * - page_size - Define the page size for paginated results. Range is 1 to 100.
+   * - format - Decide the output type (json or xml)
+   */
   async artistSearch<T extends string>(...params: T[]): Promise<any> {
     const queryParams = Object.fromEntries(
       params.map((param) => param.split('='))
     );
     return this._apiCall('get', 'artist.search', queryParams);
   }
+
+  /**
+   * Get the album discography of an artist
+   * @param params - The parameters
+   * @returns A promise that resolves to the artist albums
+   *
+   * parameters:
+   * - artist_id - Musixmatch artist id
+   * - artist_mbid - Musicbrainz artist id
+   * - g_album_name - Group by Album Name
+   * - s_release_date - Sort by release date (asc|desc)
+   * - page - Define the page number for paginated results
+   * - page_size - Define the page size for paginated results. Range is 1 to 100.
+   */
   async artistAlbumsGet<T extends string>(...params: T[]): Promise<any> {
     const queryParams = Object.fromEntries(
       params.map((param) => param.split('='))
     );
     return this._apiCall('get', 'artist.albums.get', queryParams);
   }
+
+  /**
+   * Get a list of artists somehow related to a given one.
+   * @param params - The parameters
+   * @returns A promise that resolves to the related artists.
+   *
+   * parameters:
+   * - artist_id - The Musixmatch artist id
+   * - artist_mbid - The Musicbrainz artist id
+   * - page - Define the page number for paginated results
+   * - page_size - Define the page size for paginated results. Range is 1 to 100.
+   * format - Decide the output type (json or xml)
+   */
   async artistRelatedGet<T extends string>(...params: T[]): Promise<any> {
     const queryParams = Object.fromEntries(
       params.map((param) => param.split('='))
