@@ -1,6 +1,6 @@
 const { Musixmatch } = require('../dist');
 
-const mxm = new Musixmatch('18d9fbcac52e279a77b616137280b1eb');
+const mxm = new Musixmatch('APIKEY');
 
 let trackId;
 
@@ -14,10 +14,17 @@ mxm
   .then((l) => {
     console.log(l.message.body.track_list[0].track.album_name);
     trackId = l.message.body.track_list[0].track.track_id;
-  });
-mxm.chartArtistGet('country=au', 'page=1', 'page_size=3').then((s) => {
-  console.log(s.message.body.artist_list[1].artist.artist_name);
-});
-mxm.matcherTrackGet('q_artist=MC Blue', 'q_track=Khankir Chele').then((k) => {
-  console.log(k.message.header.execute_time);
-});
+  })
+  .catch((err) => console.log(err));
+mxm
+  .chartArtistGet('country=au', 'page=1', 'page_size=3')
+  .then((s) => {
+    console.log(s.message.body.artist_list[1].artist.artist_name);
+  })
+  .catch((err) => console.log(err));
+mxm
+  .matcherTrackGet('q_artist=MC Blue', 'q_track=Khankir Chele')
+  .then((k) => {
+    console.log(k.message.body.track.commontrack_id);
+  })
+  .catch((err) => console.log(err));
