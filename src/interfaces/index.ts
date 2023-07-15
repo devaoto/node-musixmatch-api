@@ -10,3 +10,4 @@ export { TrackSnippet } from './track.snippet';
 export { MatcherLyrics } from './matcher.lyrics';
 export { MatcherSubtitle } from './matcher.subtitle';
 export { MatcherTrack } from './matcher.track';
+export { BaseInterface } from './base';
