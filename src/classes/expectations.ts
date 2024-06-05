@@ -7,7 +7,7 @@ class MXMException extends Error {
     404: 'The requested resource was not found.',
     405: 'The requested method was not found.',
     500: 'Ops. Something went wrong.',
-    503: "Our system is a bit busy at the moment and your request can't be satisfied.",
+    503: "Our system is a bit busy at the moment and your request can't be satisfied."
   };
 
   status_code: number;
