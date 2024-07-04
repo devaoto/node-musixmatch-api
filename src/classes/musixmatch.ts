@@ -19,7 +19,7 @@ import {
   TrackSubtitle,
   MatcherLyrics,
   MatcherSubtitle,
-  MatcherTrack,
+  MatcherTrack
 } from '../interfaces';
 
 /**
